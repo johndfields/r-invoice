@@ -30,7 +30,7 @@ export default function Clients() {
         <NewClient updatedClients={handleUpdatedClients} />
       </div>
 
-      <ClientTable clients={clients} />
+      <ClientTable clients={clients} updatedClients={handleUpdatedClients} />
     </>
   );
 }
