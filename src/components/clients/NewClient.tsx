@@ -25,7 +25,7 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { useToast } from "@/components/ui/use-toast";
 
-const formSchema: z.ZodType<Address> = z.object({
+const formSchema: z.ZodType<Client> = z.object({
   name: z.string().min(1, {
     message: "Client Name cannot be empty",
   }),
@@ -47,7 +47,11 @@ const formSchema: z.ZodType<Address> = z.object({
   }),
 });
 
-export default function NewClient() {
+interface NewClientProps {
+  updatedClients: () => void;
+}
+
+export default function NewClient({ updatedClients }: NewClientProps) {
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -63,7 +67,7 @@ export default function NewClient() {
     },
   });
 
-  function onSubmit(values: Address) {
+  function onSubmit(values: Client) {
     const storedClients = localStorage.getItem("clients");
 
     if (storedClients) {
@@ -80,6 +84,8 @@ export default function NewClient() {
       title: "Clients Updated",
       description: `Added ${values.name}`,
     });
+
+    updatedClients();
   }
 
   return (

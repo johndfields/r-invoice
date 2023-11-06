@@ -10,19 +10,19 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { useState } from "react";
-
-interface Client {
-  name: string;
-  address: string;
-}
+import { useEffect, useState } from "react";
 
 export default function ClientSelect() {
-  const [chosenClient, setChosenClient] = useState<Client | undefined>({
-    name: "",
-    address: "",
-  });
-  const clients: Client[] = [{ name: "FCG", address: "123" }];
+  const [clients, setClients] = useState<Client[]>([]);
+  useEffect(() => {
+    const clients = localStorage.getItem("clients");
+
+    if (clients) {
+      setClients(JSON.parse(clients));
+    }
+  }, []);
+
+  const [chosenClient, setChosenClient] = useState<Client>();
 
   const handleClientSelected = (clientName: string) => {
     setChosenClient(clients.find((client) => client.name === clientName));
