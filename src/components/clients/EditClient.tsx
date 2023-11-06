@@ -49,42 +49,45 @@ const formSchema: z.ZodType<Client> = z.object({
 
 interface NewClientProps {
   updatedClients: () => void;
+  client: Client;
 }
 
-export default function NewClient({ updatedClients }: NewClientProps) {
+export default function EditClient({ updatedClients, client }: NewClientProps) {
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      street1: "",
-      street2: "",
-      city: "",
-      state: "",
-      zipCode: "",
-      country: "",
+      name: client.name,
+      street1: client.street1,
+      street2: client.street2,
+      city: client.city,
+      state: client.state,
+      zipCode: client.zipCode,
+      country: client.country,
     },
   });
 
   function onSubmit(values: Client) {
     const storedClients = localStorage.getItem("clients");
 
-    if (storedClients) {
-      let storedClientsParsed = JSON.parse(storedClients);
-      localStorage.setItem(
-        "clients",
-        JSON.stringify([...storedClientsParsed, values])
-      );
-    } else {
-      localStorage.setItem("clients", JSON.stringify([values]));
-    }
+    const storedClientsParsed: Client[] = JSON.parse(storedClients!);
 
-    form.reset();
+    let foundIndex = storedClientsParsed.findIndex(
+      (cl) => cl.name === client.name
+    );
+
+    const newClients = [
+      ...storedClientsParsed.slice(0, foundIndex),
+      values,
+      ...storedClientsParsed.splice(foundIndex + 1),
+    ];
+
+    localStorage.setItem("clients", JSON.stringify(newClients));
 
     toast({
       title: "Clients Updated",
-      description: `Added ${values.name}`,
+      description: `Updated ${values.name}`,
     });
 
     updatedClients();
@@ -93,7 +96,7 @@ export default function NewClient({ updatedClients }: NewClientProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="gap-2">
+        <Button className="gap-2" variant="ghost">
           <svg
             width="24"
             height="24"
@@ -102,18 +105,17 @@ export default function NewClient({ updatedClients }: NewClientProps) {
             xmlns="http://www.w3.org/2000/svg"
           >
             <path
-              d="M11.883 3.007 12 3a1 1 0 0 1 .993.883L13 4v7h7a1 1 0 0 1 .993.883L21 12a1 1 0 0 1-.883.993L20 13h-7v7a1 1 0 0 1-.883.993L12 21a1 1 0 0 1-.993-.883L11 20v-7H4a1 1 0 0 1-.993-.883L3 12a1 1 0 0 1 .883-.993L4 11h7V4a1 1 0 0 1 .883-.993L12 3l-.117.007Z"
-              fill="#ffffff"
+              d="M13.94 5 19 10.06 9.062 20a2.25 2.25 0 0 1-.999.58l-5.116 1.395a.75.75 0 0 1-.92-.921l1.395-5.116a2.25 2.25 0 0 1 .58-.999L13.938 5Zm7.09-2.03a3.578 3.578 0 0 1 0 5.06l-.97.97L15 3.94l.97-.97a3.578 3.578 0 0 1 5.06 0Z"
+              fill="currentColor"
             />
           </svg>
-          New Client
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>New Client</DialogTitle>
+          <DialogTitle>Edit Client</DialogTitle>
           <DialogDescription>
-            Add a new client and billable address.
+            Edit your client and billable address.
           </DialogDescription>
         </DialogHeader>
 
@@ -219,7 +221,7 @@ export default function NewClient({ updatedClients }: NewClientProps) {
             </div>
             <DialogClose asChild>
               <Button className="ml-auto" type="submit">
-                Add Client
+                Update Client
               </Button>
             </DialogClose>
           </form>
