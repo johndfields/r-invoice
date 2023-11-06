@@ -1,28 +1,18 @@
-"use client";
-
 import { Card } from "@/components/ui/card";
-
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useEffect, useState } from "react";
 
-export function ClientTable() {
-  const [clients, setClients] = useState<Address[]>([]);
-  useEffect(() => {
-    const clients = localStorage.getItem("clients");
+interface ClientTableProps {
+  clients: Client[];
+}
 
-    if (clients) {
-      setClients(JSON.parse(clients));
-    }
-  }, []);
-
+export function ClientTable({ clients }: ClientTableProps) {
   return (
     <Card className="w-full my-8">
       {clients.length === 0 && (
@@ -32,7 +22,6 @@ export function ClientTable() {
       )}
       {clients.length > 0 && (
         <Table>
-          <TableCaption>A list of your recent invoices.</TableCaption>
           <TableHeader>
             <TableRow>
               <TableHead className="w-[100px]">Name</TableHead>

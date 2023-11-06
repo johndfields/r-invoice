@@ -1,4 +1,4 @@
-interface Address {
+interface Client {
   name: string;
   street1: string;
   street2?: string; // for apt / suite / po / etc
