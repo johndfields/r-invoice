@@ -24,8 +24,6 @@ export default function EditClient({ updatedClients, client }: NewClientProps) {
   const { toast } = useToast();
 
   function onSubmit() {
-    console.log("g");
-
     const storedClients = localStorage.getItem("clients");
 
     const storedClientsParsed: Client[] = JSON.parse(storedClients!);
