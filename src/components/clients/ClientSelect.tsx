@@ -1,5 +1,6 @@
 "use client";
 
+import { useClientStore } from "@/app/store/clientStore";
 import {
   Select,
   SelectContent,
@@ -13,13 +14,10 @@ import {
 import { useEffect, useState } from "react";
 
 export default function ClientSelect() {
-  const [clients, setClients] = useState<Client[]>([]);
-  useEffect(() => {
-    const clients = localStorage.getItem("clients");
+  const clients = useClientStore((state) => state.clients);
 
-    if (clients) {
-      setClients(JSON.parse(clients));
-    }
+  useEffect(() => {
+    useClientStore.persist.rehydrate();
   }, []);
 
   const [chosenClient, setChosenClient] = useState<Client>();

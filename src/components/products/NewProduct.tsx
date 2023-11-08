@@ -25,56 +25,44 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { useToast } from "@/components/ui/use-toast";
 
-import { useClientStore } from "@/app/store/clientStore";
+import { useProductStore } from "@/app/store/productStore";
 import { useState } from "react";
 
-const formSchema: z.ZodType<Address> = z.object({
+const formSchema: z.ZodType<Product> = z.object({
+  id: z.string(),
   name: z.string().min(1, {
-    message: "Client Name cannot be empty",
+    message: "Product name cannot be empty",
   }),
-  street1: z.string().min(1, {
-    message: "Street 1 cannot be empty",
+  rate: z.number().optional(),
+  description: z.string().min(1, {
+    message: "Product description cannot be empty",
   }),
-  street2: z.string().optional(),
-  city: z.string().min(1, {
-    message: "City cannot be empty",
-  }),
-  state: z.string().min(1, {
-    message: "State cannot be empty",
-  }),
-  zipCode: z.string().min(1, {
-    message: "Zipcode cannot be empty",
-  }),
-  country: z.string().min(1, {
-    message: "Country cannot be empty",
-  }),
+  quantity: z.number().optional(),
 });
 
-export default function NewClient() {
+export default function NewProduct() {
   const { toast } = useToast();
-  const handleAddToClients = useClientStore((state) => state.add);
+  const handleAddToProducts = useProductStore((state) => state.add);
   const [open, setOpen] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      id: "",
       name: "",
-      street1: "",
-      street2: "",
-      city: "",
-      state: "",
-      zipCode: "",
-      country: "",
+      rate: 0,
+      description: "",
+      quantity: 0,
     },
   });
 
-  function onSubmit(values: Address) {
-    handleAddToClients({ ...values, id: Date.now().toString() });
+  function onSubmit(values: Product) {
+    handleAddToProducts({ ...values, id: Date.now().toString() });
 
     form.reset();
 
     toast({
-      title: "Clients Updated",
+      title: "Products Updated",
       description: `Added ${values.name}`,
     });
 
@@ -97,15 +85,13 @@ export default function NewClient() {
               fill="#ffffff"
             />
           </svg>
-          New Client
+          New Product
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>New Client</DialogTitle>
-          <DialogDescription>
-            Add a new client and billable address.
-          </DialogDescription>
+          <DialogTitle>New Product</DialogTitle>
+          <DialogDescription>Add a new product.</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -118,9 +104,9 @@ export default function NewClient() {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Client Name</FormLabel>
+                  <FormLabel>Product Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Acme, Inc" {...field} />
+                    <Input placeholder="Laptop" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -128,12 +114,12 @@ export default function NewClient() {
             />
             <FormField
               control={form.control}
-              name="street1"
+              name="rate"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Street 1</FormLabel>
+                  <FormLabel>Rate</FormLabel>
                   <FormControl>
-                    <Input placeholder="123 W Street Rd" {...field} />
+                    <Input placeholder="$100.00" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -141,12 +127,12 @@ export default function NewClient() {
             />
             <FormField
               control={form.control}
-              name="street2"
+              name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Street 2</FormLabel>
+                  <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Input placeholder="PO 456" {...field} />
+                    <Input placeholder="A newly issued Dell XPS" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -155,53 +141,12 @@ export default function NewClient() {
             <div className="flex gap-4">
               <FormField
                 control={form.control}
-                name="city"
+                name="quantity"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>City</FormLabel>
+                    <FormLabel>Quantity</FormLabel>
                     <FormControl>
-                      <Input placeholder="Brooklyn" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="state"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>State</FormLabel>
-                    <FormControl>
-                      <Input placeholder="NY" {...field} maxLength={2} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div className="flex gap-4">
-              <FormField
-                control={form.control}
-                name="zipCode"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Zip Code</FormLabel>
-                    <FormControl>
-                      <Input placeholder="12345" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="country"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Country</FormLabel>
-                    <FormControl>
-                      <Input placeholder="United States" {...field} />
+                      <Input placeholder="1" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -210,7 +155,7 @@ export default function NewClient() {
             </div>
 
             <Button className="ml-auto" type="submit">
-              Add Client
+              Add Product
             </Button>
           </form>
         </Form>

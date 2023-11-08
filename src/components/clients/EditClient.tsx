@@ -24,11 +24,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { useToast } from "@/components/ui/use-toast";
-import { useClientStore } from "@/app/store/zustand";
+import { useClientStore } from "@/app/store/clientStore";
+import { useState } from "react";
 
-const formSchema: z.ZodType<Client> = z.object({
+const formSchema: z.ZodType<Address> = z.object({
   name: z.string().min(1, {
-    message: "Client Name cannot be empty",
+    message: "Client name cannot be empty",
   }),
   street1: z.string().min(1, {
     message: "Street 1 cannot be empty",
@@ -54,8 +55,8 @@ interface EditClientProps {
 
 export default function EditClient({ client }: EditClientProps) {
   const { toast } = useToast();
-
-  const { update: handleUpdateToClient } = useClientStore();
+  const handleUpdateToClient = useClientStore((state) => state.update);
+  const [open, setOpen] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -70,17 +71,21 @@ export default function EditClient({ client }: EditClientProps) {
     },
   });
 
-  function onSubmit(values: Client) {
-    handleUpdateToClient(values);
+  function onSubmit(values: Address) {
+    handleUpdateToClient({ ...values, id: client.id });
+
+    form.reset();
 
     toast({
       title: "Clients Updated",
       description: `Updated ${values.name}`,
     });
+
+    setOpen(false);
   }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button className="gap-2" variant="ghost">
           <svg
@@ -205,11 +210,9 @@ export default function EditClient({ client }: EditClientProps) {
                 )}
               />
             </div>
-            <DialogClose asChild>
-              <Button className="ml-auto" type="submit">
-                Update Client
-              </Button>
-            </DialogClose>
+            <Button className="ml-auto" type="submit">
+              Update Client
+            </Button>
           </form>
         </Form>
       </DialogContent>

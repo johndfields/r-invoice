@@ -12,10 +12,15 @@ import {
 import EditClient from "./EditClient";
 import DeleteClient from "./DeleteClient";
 
-import { useClientStore } from "@/app/store/zustand";
+import { useClientStore } from "@/app/store/clientStore";
+import { useEffect } from "react";
 
 export function ClientTable() {
-  const { clients } = useClientStore();
+  const clients = useClientStore((state) => state.clients);
+
+  useEffect(() => {
+    useClientStore.persist.rehydrate();
+  }, []);
 
   return (
     <Card className="w-full my-8">
@@ -24,11 +29,12 @@ export function ClientTable() {
           <p>No clients added yet</p>
         </div>
       )}
+
       {clients.length > 0 && (
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[100px]">Name</TableHead>
+              <TableHead>Name</TableHead>
               <TableHead>Street</TableHead>
               <TableHead>City</TableHead>
               <TableHead>State</TableHead>
@@ -37,7 +43,7 @@ export function ClientTable() {
           </TableHeader>
           <TableBody>
             {clients.map((client) => (
-              <TableRow key={client.name}>
+              <TableRow key={client.id}>
                 <TableCell className="font-medium">{client.name}</TableCell>
                 <TableCell>{client.street1}</TableCell>
                 <TableCell>{client.city}</TableCell>
