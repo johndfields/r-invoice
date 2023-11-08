@@ -1,3 +1,5 @@
+"use client";
+
 import { Card } from "@/components/ui/card";
 import {
   Table,
@@ -10,12 +12,11 @@ import {
 import EditClient from "./EditClient";
 import DeleteClient from "./DeleteClient";
 
-interface ClientTableProps {
-  updatedClients: () => void;
-  clients: Client[];
-}
+import { useClientStore } from "@/app/store/zustand";
 
-export function ClientTable({ updatedClients, clients }: ClientTableProps) {
+export function ClientTable() {
+  const { clients } = useClientStore();
+
   return (
     <Card className="w-full my-8">
       {clients.length === 0 && (
@@ -42,11 +43,8 @@ export function ClientTable({ updatedClients, clients }: ClientTableProps) {
                 <TableCell>{client.city}</TableCell>
                 <TableCell>{client.state}</TableCell>
                 <TableCell className="flex gap-4 justify-end items-center">
-                  <EditClient client={client} updatedClients={updatedClients} />
-                  <DeleteClient
-                    client={client}
-                    updatedClients={updatedClients}
-                  />
+                  <EditClient client={client} />
+                  <DeleteClient client={client} />
                 </TableCell>
               </TableRow>
             ))}

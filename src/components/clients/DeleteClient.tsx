@@ -14,41 +14,23 @@ import {
 import { Button } from "@/components/ui/button";
 
 import { useToast } from "@/components/ui/use-toast";
+import { useClientStore } from "@/app/store/zustand";
 
-interface NewClientProps {
-  updatedClients: () => void;
+interface DeleteClientProps {
   client: Client;
 }
 
-export default function EditClient({ updatedClients, client }: NewClientProps) {
+export default function DeleteClient({ client }: DeleteClientProps) {
   const { toast } = useToast();
+  const { delete: handleDeleteClient } = useClientStore();
 
   function onSubmit() {
-    const storedClients = localStorage.getItem("clients");
-
-    const storedClientsParsed: Client[] = JSON.parse(storedClients!);
-
-    let foundIndex = storedClientsParsed.findIndex(
-      (cl) => cl.name === client.name
-    );
-
-    if (storedClientsParsed.length > 1) {
-      const newClients = [
-        ...storedClientsParsed.slice(0, foundIndex),
-        ...storedClientsParsed.splice(foundIndex + 1),
-      ];
-
-      localStorage.setItem("clients", JSON.stringify(newClients));
-    } else {
-      localStorage.setItem("clients", JSON.stringify([]));
-    }
+    handleDeleteClient(client);
 
     toast({
       title: "Client Deleted",
       description: `Removed ${client.name}`,
     });
-
-    updatedClients();
   }
 
   return (

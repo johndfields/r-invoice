@@ -24,6 +24,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { useToast } from "@/components/ui/use-toast";
+import { useClientStore } from "@/app/store/zustand";
 
 const formSchema: z.ZodType<Client> = z.object({
   name: z.string().min(1, {
@@ -47,13 +48,14 @@ const formSchema: z.ZodType<Client> = z.object({
   }),
 });
 
-interface NewClientProps {
-  updatedClients: () => void;
+interface EditClientProps {
   client: Client;
 }
 
-export default function EditClient({ updatedClients, client }: NewClientProps) {
+export default function EditClient({ client }: EditClientProps) {
   const { toast } = useToast();
+
+  const { update: handleUpdateToClient } = useClientStore();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -69,28 +71,12 @@ export default function EditClient({ updatedClients, client }: NewClientProps) {
   });
 
   function onSubmit(values: Client) {
-    const storedClients = localStorage.getItem("clients");
-
-    const storedClientsParsed: Client[] = JSON.parse(storedClients!);
-
-    let foundIndex = storedClientsParsed.findIndex(
-      (cl) => cl.name === client.name
-    );
-
-    const newClients = [
-      ...storedClientsParsed.slice(0, foundIndex),
-      values,
-      ...storedClientsParsed.splice(foundIndex + 1),
-    ];
-
-    localStorage.setItem("clients", JSON.stringify(newClients));
+    handleUpdateToClient(values);
 
     toast({
       title: "Clients Updated",
       description: `Updated ${values.name}`,
     });
-
-    updatedClients();
   }
 
   return (

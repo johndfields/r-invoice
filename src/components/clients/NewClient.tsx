@@ -25,6 +25,8 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { useToast } from "@/components/ui/use-toast";
 
+import { useClientStore } from "@/app/store/zustand";
+
 const formSchema: z.ZodType<Client> = z.object({
   name: z.string().min(1, {
     message: "Client Name cannot be empty",
@@ -47,12 +49,9 @@ const formSchema: z.ZodType<Client> = z.object({
   }),
 });
 
-interface NewClientProps {
-  updatedClients: () => void;
-}
-
-export default function NewClient({ updatedClients }: NewClientProps) {
+export default function NewClient() {
   const { toast } = useToast();
+  const { add: handleAddToClients } = useClientStore();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -68,17 +67,7 @@ export default function NewClient({ updatedClients }: NewClientProps) {
   });
 
   function onSubmit(values: Client) {
-    const storedClients = localStorage.getItem("clients");
-
-    if (storedClients) {
-      let storedClientsParsed = JSON.parse(storedClients);
-      localStorage.setItem(
-        "clients",
-        JSON.stringify([...storedClientsParsed, values])
-      );
-    } else {
-      localStorage.setItem("clients", JSON.stringify([values]));
-    }
+    handleAddToClients(values);
 
     form.reset();
 
@@ -86,8 +75,6 @@ export default function NewClient({ updatedClients }: NewClientProps) {
       title: "Clients Updated",
       description: `Added ${values.name}`,
     });
-
-    updatedClients();
   }
 
   return (
