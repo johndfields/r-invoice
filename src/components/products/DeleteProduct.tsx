@@ -14,22 +14,22 @@ import {
 import { Button } from "@/components/ui/button";
 
 import { useToast } from "@/components/ui/use-toast";
-import { useClientStore } from "@/app/store/clientStore";
+import { useProductStore } from "@/app/store/productStore";
 
-interface DeleteClientProps {
-  client: Client;
+interface DeleteProductProps {
+  product: Product;
 }
 
-export default function DeleteClient({ client }: DeleteClientProps) {
+export default function DeleteProduct({ product }: DeleteProductProps) {
   const { toast } = useToast();
-  const handleDeleteClient = useClientStore((state) => state.delete);
+  const handleDeleteProduct = useProductStore((state) => state.delete);
 
   function onSubmit() {
-    handleDeleteClient(client);
+    handleDeleteProduct(product);
 
     toast({
-      title: "Client Deleted",
-      description: `Removed ${client.name}`,
+      title: "Product Deleted",
+      description: `Removed ${product.name}`,
     });
   }
 
@@ -53,9 +53,9 @@ export default function DeleteClient({ client }: DeleteClientProps) {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Delete Client</DialogTitle>
+          <DialogTitle>Delete Product</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete the client?
+            Are you sure you want to delete the product?
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="flex justify-between items-center">
@@ -64,7 +64,7 @@ export default function DeleteClient({ client }: DeleteClientProps) {
           </DialogClose>
           <DialogClose asChild>
             <Button onClick={onSubmit} variant="destructive">
-              Delete Client
+              Delete Product
             </Button>
           </DialogClose>
         </DialogFooter>

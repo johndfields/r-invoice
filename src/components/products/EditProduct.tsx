@@ -24,58 +24,50 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { useToast } from "@/components/ui/use-toast";
-
-import { useClientStore } from "@/app/store/clientStore";
+import { useProductStore } from "@/app/store/productStore";
 import { useState } from "react";
 
-const formSchema: z.ZodType<Address> = z.object({
+const formSchema: z.ZodType<Product> = z.object({
+  id: z.string(),
   name: z.string().min(1, {
-    message: "Client Name cannot be empty",
+    message: "Product name cannot be empty",
   }),
-  street1: z.string().min(1, {
-    message: "Street 1 cannot be empty",
+  rate: z.number().optional(),
+  description: z.string().min(1, {
+    message: "Product description cannot be empty",
   }),
-  street2: z.string().optional(),
-  city: z.string().min(1, {
-    message: "City cannot be empty",
-  }),
-  state: z.string().min(1, {
-    message: "State cannot be empty",
-  }),
-  zipCode: z.string().min(1, {
-    message: "Zipcode cannot be empty",
-  }),
-  country: z.string().min(1, {
-    message: "Country cannot be empty",
-  }),
+  quantity: z.number().optional(),
 });
 
-export default function NewClient() {
+interface EditProductProps {
+  product: Product;
+}
+
+export default function EditProduct({ product }: EditProductProps) {
   const { toast } = useToast();
-  const handleAddToClients = useClientStore((state) => state.add);
   const [open, setOpen] = useState(false);
+
+  const handleUpdateToProduct = useProductStore((state) => state.update);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      street1: "",
-      street2: "",
-      city: "",
-      state: "",
-      zipCode: "",
-      country: "",
+      id: product.id,
+      name: product.name,
+      rate: product.rate,
+      description: product.description,
+      quantity: product.quantity,
     },
   });
 
-  function onSubmit(values: Address) {
-    handleAddToClients({ ...values, id: Date.now().toString() });
+  function onSubmit(values: Product) {
+    handleUpdateToProduct({ ...values, id: product.id });
 
     form.reset();
 
     toast({
-      title: "Clients Updated",
-      description: `Added ${values.name}`,
+      title: "Products Updated",
+      description: `Updated ${values.name}`,
     });
 
     setOpen(false);
@@ -84,7 +76,7 @@ export default function NewClient() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="gap-2">
+        <Button className="gap-2" variant="ghost">
           <svg
             width="24"
             height="24"
@@ -93,19 +85,16 @@ export default function NewClient() {
             xmlns="http://www.w3.org/2000/svg"
           >
             <path
-              d="M11.883 3.007 12 3a1 1 0 0 1 .993.883L13 4v7h7a1 1 0 0 1 .993.883L21 12a1 1 0 0 1-.883.993L20 13h-7v7a1 1 0 0 1-.883.993L12 21a1 1 0 0 1-.993-.883L11 20v-7H4a1 1 0 0 1-.993-.883L3 12a1 1 0 0 1 .883-.993L4 11h7V4a1 1 0 0 1 .883-.993L12 3l-.117.007Z"
-              fill="#ffffff"
+              d="M13.94 5 19 10.06 9.062 20a2.25 2.25 0 0 1-.999.58l-5.116 1.395a.75.75 0 0 1-.92-.921l1.395-5.116a2.25 2.25 0 0 1 .58-.999L13.938 5Zm7.09-2.03a3.578 3.578 0 0 1 0 5.06l-.97.97L15 3.94l.97-.97a3.578 3.578 0 0 1 5.06 0Z"
+              fill="currentColor"
             />
           </svg>
-          New Client
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>New Client</DialogTitle>
-          <DialogDescription>
-            Add a new client and billable address.
-          </DialogDescription>
+          <DialogTitle>Edit Product</DialogTitle>
+          <DialogDescription>Edit your product.</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -118,7 +107,7 @@ export default function NewClient() {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Client Name</FormLabel>
+                  <FormLabel>Product Name</FormLabel>
                   <FormControl>
                     <Input placeholder="Acme, Inc" {...field} />
                   </FormControl>
@@ -128,7 +117,7 @@ export default function NewClient() {
             />
             <FormField
               control={form.control}
-              name="street1"
+              name="rate"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Street 1</FormLabel>
@@ -141,7 +130,7 @@ export default function NewClient() {
             />
             <FormField
               control={form.control}
-              name="street2"
+              name="description"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Street 2</FormLabel>
@@ -155,7 +144,7 @@ export default function NewClient() {
             <div className="flex gap-4">
               <FormField
                 control={form.control}
-                name="city"
+                name="quantity"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>City</FormLabel>
@@ -166,51 +155,10 @@ export default function NewClient() {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="state"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>State</FormLabel>
-                    <FormControl>
-                      <Input placeholder="NY" {...field} maxLength={2} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div className="flex gap-4">
-              <FormField
-                control={form.control}
-                name="zipCode"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Zip Code</FormLabel>
-                    <FormControl>
-                      <Input placeholder="12345" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="country"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Country</FormLabel>
-                    <FormControl>
-                      <Input placeholder="United States" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
             </div>
 
             <Button className="ml-auto" type="submit">
-              Add Client
+              Update Product
             </Button>
           </form>
         </Form>
