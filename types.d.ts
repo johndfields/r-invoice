@@ -27,5 +27,5 @@ interface Invoice {
   userAddress: Address;
   status: string;
   description?: string;
-  products: Product[]
+  products: Product[];
 }

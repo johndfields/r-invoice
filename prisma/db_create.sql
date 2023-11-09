@@ -1,0 +1,23 @@
+Drop Table address;
+Drop table users;
+
+CREATE TABLE users (
+  id VARCHAR(255) PRIMARY KEY,
+  firstName VARCHAR(255) NOT NULL,
+  lastName VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  addressId VARCHAR(255)
+);
+
+CREATE TABLE address (
+  id VARCHAR(255) PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  street1 VARCHAR(255) NOT NULL,
+  street2 VARCHAR(255),
+  city VARCHAR(255) NOT NULL,
+  state VARCHAR(255) NOT NULL,
+  zipCode VARCHAR(255) NOT NULL,
+  country VARCHAR(255) NOT NULL,
+  type VARCHAR(255) NOT NULL,
+  createdByUserId VARCHAR(255) NOT NULL
+);
