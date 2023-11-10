@@ -41,7 +41,7 @@ const formSchema: z.ZodType<Address> = z.object({
   state: z.string().min(1, {
     message: "State cannot be empty",
   }),
-  zipCode: z.string().min(1, {
+  zipcode: z.string().min(1, {
     message: "Zipcode cannot be empty",
   }),
   country: z.string().min(1, {
@@ -63,10 +63,10 @@ export default function EditClient({ client }: EditClientProps) {
     defaultValues: {
       name: client.name,
       street1: client.street1,
-      street2: client.street2,
+      street2: client.street2 ? client.street2 : "",
       city: client.city,
       state: client.state,
-      zipCode: client.zipCode,
+      zipcode: client.zipcode,
       country: client.country,
     },
   });
@@ -185,7 +185,7 @@ export default function EditClient({ client }: EditClientProps) {
             <div className="flex gap-4">
               <FormField
                 control={form.control}
-                name="zipCode"
+                name="zipcode"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Zip Code</FormLabel>

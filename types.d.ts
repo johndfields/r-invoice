@@ -4,7 +4,7 @@ interface Address {
   street2?: string; // for apt / suite / po / etc
   city: string;
   state: string;
-  zipCode: string;
+  zipcode: string;
   country: string;
 }
 

@@ -13,13 +13,28 @@ import EditClient from "./EditClient";
 import DeleteClient from "./DeleteClient";
 
 import { useClientStore } from "@/app/store/clientStore";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export function ClientTable() {
-  const clients = useClientStore((state) => state.clients);
+  const [clients, setClients] = useState<Client[]>([]);
+  // const clients = useClientStore((state) => state.clients);
+
+  const update = async () => {
+    const res = await fetch("/api/clients", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const { addresses } = await res.json();
+
+    setClients(addresses);
+  };
 
   useEffect(() => {
     useClientStore.persist.rehydrate();
+    update();
   }, []);
 
   return (

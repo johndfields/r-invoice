@@ -4,20 +4,21 @@ const prisma = new PrismaClient();
 
 async function main() {
   // Create users
-  await prisma.users.createMany({
+  await prisma.user.createMany({
     data: [
       {
         id: "d774bba0-0f8d-4e5d-a06c-1f287d226078",
         firstName: "John",
         lastName: "Doe",
         email: "john.doe@example.com",
-        addressId: "3f5f7519-7fc4-4c59-80cb-bf1000a72b58",
+        password: "T3stU$er",
       },
       {
         id: "7edf5e8b-94d1-4c19-8996-8ca5db6ee909",
         firstName: "Jane",
         lastName: "Smith",
         email: "jane.smith@example.com",
+        password: "T3stU$er",
       },
     ],
   });

@@ -42,7 +42,7 @@ const formSchema: z.ZodType<Address> = z.object({
   state: z.string().min(1, {
     message: "State cannot be empty",
   }),
-  zipCode: z.string().min(1, {
+  zipcode: z.string().min(1, {
     message: "Zipcode cannot be empty",
   }),
   country: z.string().min(1, {
@@ -63,7 +63,7 @@ export default function NewClient() {
       street2: "",
       city: "",
       state: "",
-      zipCode: "",
+      zipcode: "",
       country: "",
     },
   });
@@ -183,7 +183,7 @@ export default function NewClient() {
             <div className="flex gap-4">
               <FormField
                 control={form.control}
-                name="zipCode"
+                name="zipcode"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Zip Code</FormLabel>
