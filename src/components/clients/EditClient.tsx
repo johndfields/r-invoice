@@ -26,6 +26,7 @@ import * as z from "zod";
 import { useToast } from "@/components/ui/use-toast";
 import { useClientStore } from "@/app/store/clientStore";
 import { useState } from "react";
+import Spinner from "../Spinner";
 
 const formSchema: z.ZodType<Address> = z.object({
   name: z.string().min(1, {
@@ -57,6 +58,7 @@ export default function EditClient({ client }: EditClientProps) {
   const { toast } = useToast();
   const handleUpdateToClient = useClientStore((state) => state.update);
   const [open, setOpen] = useState(false);
+  const [isLoading, setLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -72,6 +74,7 @@ export default function EditClient({ client }: EditClientProps) {
   });
 
   async function onSubmit(values: Address) {
+    setLoading(true);
     try {
       const res = await fetch(`/api/clients/${client.id}`, {
         method: "PUT",
@@ -107,6 +110,7 @@ export default function EditClient({ client }: EditClientProps) {
         variant: "destructive",
       });
     }
+    setLoading(false);
   }
 
   return (
@@ -235,8 +239,8 @@ export default function EditClient({ client }: EditClientProps) {
                 )}
               />
             </div>
-            <Button className="ml-auto" type="submit">
-              Update Client
+            <Button className="ml-auto text-center" type="submit">
+              {isLoading ? <Spinner color="white" /> : "Update Client"}
             </Button>
           </form>
         </Form>

@@ -15,6 +15,8 @@ import { Button } from "@/components/ui/button";
 
 import { useToast } from "@/components/ui/use-toast";
 import { useClientStore } from "@/app/store/clientStore";
+import { useState } from "react";
+import Spinner from "../Spinner";
 
 interface DeleteClientProps {
   client: Client;
@@ -23,18 +25,41 @@ interface DeleteClientProps {
 export default function DeleteClient({ client }: DeleteClientProps) {
   const { toast } = useToast();
   const handleDeleteClient = useClientStore((state) => state.delete);
+  const [open, setOpen] = useState(false);
+  const [isLoading, setLoading] = useState(false);
 
-  function onSubmit() {
-    handleDeleteClient(client);
+  async function onSubmit() {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/clients/${client.id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: client.id,
+        }),
+      });
 
-    toast({
-      title: "Client Deleted",
-      description: `Removed ${client.name}`,
-    });
+      handleDeleteClient(client);
+
+      toast({
+        title: "Clients Deleted",
+        description: `Updated ${client.name}`,
+      });
+
+      setOpen(false);
+    } catch {
+      toast({
+        title: "Unable to delete client.",
+        variant: "destructive",
+      });
+    }
+    setLoading(false);
   }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button className="gap-2" variant="ghost">
           <svg
@@ -62,11 +87,9 @@ export default function DeleteClient({ client }: DeleteClientProps) {
           <DialogClose asChild>
             <Button variant="outline">Cancel</Button>
           </DialogClose>
-          <DialogClose asChild>
-            <Button onClick={onSubmit} variant="destructive">
-              Delete Client
-            </Button>
-          </DialogClose>
+          <Button onClick={onSubmit} variant="destructive">
+            {isLoading ? <Spinner color="white" /> : "Delete Client"}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -14,6 +14,9 @@ export async function POST(request: Request) {
     newClient.id = id;
 
     // TODO: Create new client in Prisma
+    await prisma.address.create({
+      data: newClient,
+    });
 
     return NextResponse.json({ client: newClient }, { status: 200 });
   } catch (e) {
