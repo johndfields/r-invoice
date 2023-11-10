@@ -1,0 +1,32 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id        String    @id @default(uuid())
+  firstName String    @db.VarChar(255)
+  lastName  String    @db.VarChar(255)
+  email     String    @db.VarChar(255)
+  password  String    @db.VarChar(255)
+  address   Address[]
+}
+
+model Address {
+  id              String  @id @default(uuid())
+  name            String  @db.VarChar(255)
+  street1         String  @db.VarChar(255)
+  street2         String? @db.VarChar(255)
+  city            String  @db.VarChar(255)
+  state           String  @db.VarChar(255)
+  zipcode         String  @db.VarChar(255)
+  country         String  @db.VarChar(255)
+  type            String  @db.VarChar(255)
+  user            User    @relation(fields: [createdByUserId], references: [id])
+  createdByUserId String
+}

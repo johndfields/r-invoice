@@ -13,18 +13,40 @@ import EditClient from "./EditClient";
 import DeleteClient from "./DeleteClient";
 
 import { useClientStore } from "@/app/store/clientStore";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import Spinner from "../Spinner";
 
 export function ClientTable() {
-  const clients = useClientStore((state) => state.clients);
+  const { clients, setClients } = useClientStore();
+  const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
-    useClientStore.persist.rehydrate();
+    async function getClients() {
+      setLoading(true);
+      const res = await fetch("/api/clients", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const { addresses } = await res.json();
+
+      setLoading(false);
+      setClients(addresses);
+    }
+    getClients();
   }, []);
 
   return (
     <Card className="w-full my-8">
-      {clients.length === 0 && (
+      {isLoading && (
+        <div className="p-4 w-full flex justify-center items-center">
+          <Spinner />
+        </div>
+      )}
+
+      {clients.length === 0 && !isLoading && (
         <div className="p-4 text-center">
           <p>No clients added yet</p>
         </div>

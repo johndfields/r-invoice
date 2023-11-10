@@ -26,6 +26,7 @@ import * as z from "zod";
 import { useToast } from "@/components/ui/use-toast";
 import { useClientStore } from "@/app/store/clientStore";
 import { useState } from "react";
+import Spinner from "../Spinner";
 
 const formSchema: z.ZodType<Address> = z.object({
   name: z.string().min(1, {
@@ -41,7 +42,7 @@ const formSchema: z.ZodType<Address> = z.object({
   state: z.string().min(1, {
     message: "State cannot be empty",
   }),
-  zipCode: z.string().min(1, {
+  zipcode: z.string().min(1, {
     message: "Zipcode cannot be empty",
   }),
   country: z.string().min(1, {
@@ -57,31 +58,59 @@ export default function EditClient({ client }: EditClientProps) {
   const { toast } = useToast();
   const handleUpdateToClient = useClientStore((state) => state.update);
   const [open, setOpen] = useState(false);
+  const [isLoading, setLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: client.name,
       street1: client.street1,
-      street2: client.street2,
+      street2: client.street2 ? client.street2 : "",
       city: client.city,
       state: client.state,
-      zipCode: client.zipCode,
+      zipcode: client.zipcode,
       country: client.country,
     },
   });
 
-  function onSubmit(values: Address) {
-    handleUpdateToClient({ ...values, id: client.id });
+  async function onSubmit(values: Address) {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/clients/${client.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...values,
+          id: client.id,
+          createdByUserId: client.createdByUserId,
+          type: "client",
+        }),
+      });
 
-    form.reset();
+      handleUpdateToClient({
+        ...values,
+        id: client.id,
+        createdByUserId: client.createdByUserId,
+        type: "client",
+      });
 
-    toast({
-      title: "Clients Updated",
-      description: `Updated ${values.name}`,
-    });
+      form.reset();
 
-    setOpen(false);
+      toast({
+        title: "Clients Updated",
+        description: `Updated ${values.name}`,
+      });
+
+      setOpen(false);
+    } catch {
+      toast({
+        title: "Unable to update client.",
+        variant: "destructive",
+      });
+    }
+    setLoading(false);
   }
 
   return (
@@ -185,7 +214,7 @@ export default function EditClient({ client }: EditClientProps) {
             <div className="flex gap-4">
               <FormField
                 control={form.control}
-                name="zipCode"
+                name="zipcode"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Zip Code</FormLabel>
@@ -210,8 +239,8 @@ export default function EditClient({ client }: EditClientProps) {
                 )}
               />
             </div>
-            <Button className="ml-auto" type="submit">
-              Update Client
+            <Button className="ml-auto text-center" type="submit">
+              {isLoading ? <Spinner color="white" /> : "Update Client"}
             </Button>
           </form>
         </Form>

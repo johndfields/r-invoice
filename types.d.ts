@@ -4,12 +4,14 @@ interface Address {
   street2?: string; // for apt / suite / po / etc
   city: string;
   state: string;
-  zipCode: string;
+  zipcode: string;
   country: string;
 }
 
 interface Client extends Address {
   id: string;
+  createdByUserId: string;
+  type: string;
 }
 
 interface Product {
@@ -27,5 +29,5 @@ interface Invoice {
   userAddress: Address;
   status: string;
   description?: string;
-  products: Product[]
+  products: Product[];
 }

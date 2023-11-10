@@ -3,6 +3,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 
 type ClientStore = {
   clients: Client[];
+  setClients: (clients: Client[]) => void;
   add: (newClient: Client) => void;
   update: (clientToUpdate: Client) => void;
   delete: (clientToDelete: Client) => void;
@@ -12,6 +13,7 @@ export const useClientStore = create<ClientStore>()(
   persist(
     (set) => ({
       clients: [],
+      setClients: (clients: Client[]) => set((state) => ({ clients })), // TODO: Update with real array
       add: (newClient: Client) =>
         set((state) => ({ clients: [...state.clients, newClient] })),
       update: (clientToUpdate: Client) =>

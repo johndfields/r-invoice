@@ -2,10 +2,8 @@
 
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -26,6 +24,7 @@ import * as z from "zod";
 import { useToast } from "@/components/ui/use-toast";
 import { useProductStore } from "@/app/store/productStore";
 import { useState } from "react";
+import { Textarea } from "../ui/textarea";
 
 const formSchema: z.ZodType<Product> = z.object({
   id: z.string(),
@@ -100,7 +99,7 @@ export default function EditProduct({ product }: EditProductProps) {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-8 my-8 mx-auto flex flex-col"
+            className="space-y-8 my-8 mx-auto flex w-4/5 flex-col"
           >
             <FormField
               control={form.control}
@@ -133,29 +132,31 @@ export default function EditProduct({ product }: EditProductProps) {
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Street 2</FormLabel>
+                  <FormLabel>Bio</FormLabel>
                   <FormControl>
-                    <Input placeholder="PO 456" {...field} />
+                    <Textarea
+                      placeholder="A newly issued Dell XPS"
+                      className="resize-none"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <div className="flex gap-4">
-              <FormField
-                control={form.control}
-                name="quantity"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>City</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Brooklyn" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="quantity"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>City</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Brooklyn" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <Button className="ml-auto" type="submit">
               Update Product
