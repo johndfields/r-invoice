@@ -71,17 +71,42 @@ export default function EditClient({ client }: EditClientProps) {
     },
   });
 
-  function onSubmit(values: Address) {
-    handleUpdateToClient({ ...values, id: client.id });
+  async function onSubmit(values: Address) {
+    try {
+      const res = await fetch(`/api/clients/${client.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...values,
+          id: client.id,
+          createdByUserId: client.createdByUserId,
+          type: "client",
+        }),
+      });
 
-    form.reset();
+      handleUpdateToClient({
+        ...values,
+        id: client.id,
+        createdByUserId: client.createdByUserId,
+        type: "client",
+      });
 
-    toast({
-      title: "Clients Updated",
-      description: `Updated ${values.name}`,
-    });
+      form.reset();
 
-    setOpen(false);
+      toast({
+        title: "Clients Updated",
+        description: `Updated ${values.name}`,
+      });
+
+      setOpen(false);
+    } catch {
+      toast({
+        title: "Unable to update client.",
+        variant: "destructive",
+      });
+    }
   }
 
   return (

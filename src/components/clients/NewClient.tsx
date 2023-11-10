@@ -68,17 +68,38 @@ export default function NewClient() {
     },
   });
 
-  function onSubmit(values: Address) {
-    handleAddToClients({ ...values, id: Date.now().toString() });
+  async function onSubmit(values: Address) {
+    try {
+      const res = await fetch("/api/clients", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...values,
+          createdByUserId: "d774bba0-0f8d-4e5d-a06c-1f287d226078",
+          type: "client",
+        }),
+      });
 
-    form.reset();
+      const { client } = await res.json();
 
-    toast({
-      title: "Clients Updated",
-      description: `Added ${values.name}`,
-    });
+      handleAddToClients(client);
 
-    setOpen(false);
+      form.reset();
+
+      toast({
+        title: "Client Updated",
+        description: `Added ${values.name}`,
+      });
+
+      setOpen(false);
+    } catch {
+      toast({
+        title: "Unable to add client.",
+        variant: "destructive",
+      });
+    }
   }
 
   return (

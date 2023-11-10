@@ -10,6 +10,8 @@ interface Address {
 
 interface Client extends Address {
   id: string;
+  createdByUserId: string;
+  type: string;
 }
 
 interface Product {
