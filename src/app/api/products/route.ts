@@ -10,14 +10,15 @@ export async function POST(request: Request) {
   const id = uuidv4();
 
   try {
-    const newClient = await request.json();
-    newClient.id = id;
+    const newProduct = await request.json();
+    newProduct.id = id;
+    newProduct.rate = Number(newProduct.rate.toFixed(2));
 
-    await prisma.address.create({
-      data: newClient,
+    await prisma.product.create({
+      data: newProduct,
     });
 
-    return NextResponse.json({ client: newClient }, { status: 200 });
+    return NextResponse.json({ product: newProduct }, { status: 200 });
   } catch (e) {
     console.error(e);
     return NextResponse.json(
@@ -27,18 +28,15 @@ export async function POST(request: Request) {
   }
 }
 
-// Return ALL Clients
+// Return ALL Products
 export async function GET(request: Request) {
   try {
-    const addresses = await prisma.address.findMany({
+    const products = await prisma.product.findMany({
       where: {
-        AND: [
-          { createdByUserId: "d774bba0-0f8d-4e5d-a06c-1f287d226078" },
-          { type: "client" },
-        ],
+        createdByUserId: "d774bba0-0f8d-4e5d-a06c-1f287d226078",
       },
     });
-    return NextResponse.json({ addresses }, { status: 200 });
+    return NextResponse.json({ products }, { status: 200 });
   } catch (e) {
     console.error(e);
     return NextResponse.json(

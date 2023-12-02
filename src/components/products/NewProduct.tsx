@@ -25,23 +25,26 @@ import { useToast } from "@/components/ui/use-toast";
 import { useProductStore } from "@/app/store/productStore";
 import { useState } from "react";
 import { Textarea } from "../ui/textarea";
+import Spinner from "../Spinner";
 
 const formSchema: z.ZodType<Product> = z.object({
   id: z.string(),
   name: z.string().min(1, {
     message: "Product name cannot be empty",
   }),
-  rate: z.number().optional(),
+  rate: z.coerce.number().min(1, {
+    message: "Product rate cannot be empty",
+  }),
   description: z.string().min(1, {
     message: "Product description cannot be empty",
   }),
-  quantity: z.number().optional(),
 });
 
 export default function NewProduct() {
   const { toast } = useToast();
   const handleAddToProducts = useProductStore((state) => state.add);
   const [open, setOpen] = useState(false);
+  const [isLoading, setLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -50,21 +53,43 @@ export default function NewProduct() {
       name: "",
       rate: 0,
       description: "",
-      quantity: 0,
     },
   });
 
-  function onSubmit(values: Product) {
-    handleAddToProducts({ ...values, id: Date.now().toString() });
+  async function onSubmit(values: Product) {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/products", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...values,
+          createdByUserId: "d774bba0-0f8d-4e5d-a06c-1f287d226078",
+        }),
+      });
 
-    form.reset();
+      const { product } = await res.json();
 
-    toast({
-      title: "Products Updated",
-      description: `Added ${values.name}`,
-    });
+      handleAddToProducts(product);
 
-    setOpen(false);
+      form.reset();
+
+      toast({
+        title: "Products Updated",
+        description: `Added ${values.name}`,
+      });
+
+      setOpen(false);
+    } catch {
+      toast({
+        title: "Unable to add product.",
+        variant: "destructive",
+      });
+    }
+
+    setLoading(false);
   }
 
   return (
@@ -117,7 +142,7 @@ export default function NewProduct() {
                 <FormItem>
                   <FormLabel>Rate</FormLabel>
                   <FormControl>
-                    <Input placeholder="$100.00" {...field} />
+                    <Input placeholder="100.00" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -128,7 +153,7 @@ export default function NewProduct() {
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Bio</FormLabel>
+                  <FormLabel>Description</FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="A newly issued Dell XPS"
@@ -140,22 +165,9 @@ export default function NewProduct() {
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="quantity"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Quantity</FormLabel>
-                  <FormControl>
-                    <Input placeholder="1" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
 
             <Button className="ml-auto" type="submit">
-              Add Product
+              {isLoading ? <Spinner color="white" /> : "Add Product"}
             </Button>
           </form>
         </Form>

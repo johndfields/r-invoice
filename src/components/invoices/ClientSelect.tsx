@@ -12,12 +12,28 @@ import {
 } from "@/components/ui/select";
 
 import { useEffect, useState } from "react";
+import Spinner from "../Spinner";
 
 export default function ClientSelect() {
-  const clients = useClientStore((state) => state.clients);
+  const { clients, setClients } = useClientStore();
+  const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
-    useClientStore.persist.rehydrate();
+    async function getClients() {
+      setLoading(true);
+      const res = await fetch("/api/clients", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const { addresses } = await res.json();
+
+      setLoading(false);
+      setClients(addresses);
+    }
+    getClients();
   }, []);
 
   const [chosenClient, setChosenClient] = useState<Client>();
@@ -27,7 +43,7 @@ export default function ClientSelect() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-start p-4">
+    <main className="flex flex-col items-start p-4">
       <p>Choose Client</p>
       <Select
         onValueChange={(clientName: string) => handleClientSelected(clientName)}
@@ -38,8 +54,20 @@ export default function ClientSelect() {
         <SelectContent>
           <SelectGroup>
             <SelectLabel>Clients</SelectLabel>
+            {isLoading && (
+              <div className="p-4 w-full flex justify-center items-center">
+                <Spinner />
+              </div>
+            )}
+
+            {clients.length === 0 && !isLoading && (
+              <div className="p-4 text-center">
+                <p>No clients added yet</p>
+              </div>
+            )}
+
             {clients.map((client: Client) => (
-              <SelectItem key={client.name} value={client.name}>
+              <SelectItem key={client.id} value={client.name}>
                 {client.name}
               </SelectItem>
             ))}

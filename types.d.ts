@@ -17,9 +17,8 @@ interface Client extends Address {
 interface Product {
   id: string;
   name: string;
-  rate?: number;
-  description?: string;
-  quantity?: number;
+  rate: number;
+  description: string;
 }
 
 interface Invoice {

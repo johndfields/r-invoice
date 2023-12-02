@@ -2,7 +2,8 @@
 
 import { useRouter } from "next/navigation";
 
-import ClientSelect from "@/components/clients/ClientSelect";
+import ClientSelect from "@/components/invoices/ClientSelect";
+import ProductSelect from "@/components/invoices/ProductSelect";
 
 export default function NewInvoice() {
   const router = useRouter();
@@ -29,6 +30,7 @@ export default function NewInvoice() {
         <h1 className="text-3xl">Products</h1>
       </div>
       <ClientSelect />
+      <ProductSelect />
     </div>
   );
 }

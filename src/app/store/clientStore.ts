@@ -13,7 +13,7 @@ export const useClientStore = create<ClientStore>()(
   persist(
     (set) => ({
       clients: [],
-      setClients: (clients: Client[]) => set((state) => ({ clients })), // TODO: Update with real array
+      setClients: (clients: Client[]) => set((state) => ({ clients })),
       add: (newClient: Client) =>
         set((state) => ({ clients: [...state.clients, newClient] })),
       update: (clientToUpdate: Client) =>
