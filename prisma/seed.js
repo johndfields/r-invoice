@@ -50,6 +50,39 @@ async function main() {
     ],
   });
 
+  await prisma.product.createMany({
+    data: [
+      {
+        id: "37863ec2-95e4-4d8a-b7f6-f372652d946d",
+        name: "Product 1",
+        rate: 9.99,
+        description: "This is the first sample product",
+        createdByUserId: "d774bba0-0f8d-4e5d-a06c-1f287d226078",
+      },
+      {
+        id: "856877f5-a9d7-41c8-9b54-f95c60a94c20",
+        name: "Second Product",
+        rate: 5.49,
+        description: "This is the next sample product for demonstration",
+        createdByUserId: "d774bba0-0f8d-4e5d-a06c-1f287d226078",
+      },
+      {
+        id: "ae83b2bd-42d2-4441-8733-352012f9294e",
+        name: "Widget",
+        rate: 15.0,
+        description: "This is a sample widget",
+        createdByUserId: "d774bba0-0f8d-4e5d-a06c-1f287d226078",
+      },
+      {
+        id: "7912f7fc-3274-4569-86b3-684d5a0a8df3",
+        name: "Magic Gizmo",
+        rate: 3.99,
+        description: "This magic gizmo is very popular",
+        createdByUserId: "d774bba0-0f8d-4e5d-a06c-1f287d226078",
+      },
+    ],
+  });
+
   console.log("Seeded initial data");
 }
 

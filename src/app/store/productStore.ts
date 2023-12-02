@@ -3,6 +3,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 
 type ProductStore = {
   products: Product[];
+  setProducts: (products: Product[]) => void;
   add: (newProduct: Product) => void;
   update: (productToUpdate: Product) => void;
   delete: (productToDelete: Product) => void;
@@ -12,6 +13,7 @@ export const useProductStore = create<ProductStore>()(
   persist(
     (set) => ({
       products: [],
+      setProducts: (products: Product[]) => set((state) => ({ products })),
       add: (newProduct: Product) =>
         set((state) => ({ products: [...state.products, newProduct] })),
       update: (productToUpdate: Product) =>

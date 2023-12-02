@@ -14,7 +14,8 @@ model User {
   lastName  String    @db.VarChar(255)
   email     String    @db.VarChar(255)
   password  String    @db.VarChar(255)
-  address   Address[]
+  addresses Address[]
+  products  Product[]
 }
 
 model Address {
@@ -29,4 +30,30 @@ model Address {
   type            String  @db.VarChar(255)
   user            User    @relation(fields: [createdByUserId], references: [id])
   createdByUserId String
+}
+
+model Product {
+  id              String        @id @default(uuid())
+  name            String        @db.VarChar(255)
+  rate            Float         @db.DoublePrecision
+  description     String        @db.Text
+  user            User          @relation(fields: [createdByUserId], references: [id])
+  createdByUserId String
+  InvoiceItem     InvoiceItem[]
+}
+
+model Invoice {
+  id          String        @id @default(uuid())
+  customerId  String        @db.VarChar(255)
+  // date        DateTime
+  InvoiceItem InvoiceItem[]
+}
+
+model InvoiceItem {
+  id        String  @id @default(uuid())
+  invoice   Invoice @relation(fields: [invoiceId], references: [id])
+  invoiceId String  @db.VarChar(255)
+  product   Product @relation(fields: [productId], references: [id])
+  productId String  @db.VarChar(255)
+  quantity  Int
 }
